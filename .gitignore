@@ -1,9 +1,12 @@
+/.vscode/
+
 __pycache__/
 
-# venv
 /app/bin/
 /app/include/
 /app/lib/
 /app/share/
 /app/lib64
 /app/pyvenv.cfg
+
+/app/config_custom.py
