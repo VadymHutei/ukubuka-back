@@ -48,7 +48,11 @@ class Menus(Resource):
             ]
         )
 
-api.add_resource(Menus, '/menu')
+class MenuItems(Resource):
+    pass
+
+api.add_resource(Menus, '/menus')
+api.add_resource(MenuItems, '/menus/items')
 
 @app.route('/', methods=['GET'])
 def main():
