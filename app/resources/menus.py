@@ -3,14 +3,7 @@ from flask_restful import Resource
 
 
 class Menus(Resource):
-    '''
 
-    ARGUMENT    DEFAULT VALUE   ALTERNATIVE VALUE
-    structure   list            tree
-    active      Y               N
-    parent      None            <item_id>
-
-    '''
     def get(self):
         return jsonify(
             [
