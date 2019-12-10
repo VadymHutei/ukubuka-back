@@ -1,10 +1,19 @@
 from flask import jsonify
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
 
 
 class Menus(Resource):
 
     def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('parent', type=int, location='args')
+        parser.add_argument('alias', location='args')
+        parser.add_argument('active', location='args')
+        parser.add_argument('order', location='args')
+        parser.add_argument('language', location='headers')
+
+        args = parser.parse_args()
+
         return jsonify(
             [
                 {
