@@ -83,6 +83,13 @@ def menuID(menu_id) -> bool:
     return False
 
 
+def menuAlias(alias):
+    if isinstance(alias, str):
+        pattern = r'[a-z_-]{1,64}'
+        return re.fullmatch(pattern, alias)
+    return False
+
+
 def menuItemID(item_id) -> bool:
     if isinstance(item_id, str):
         pattern = r'[0-9]{1,4}'
