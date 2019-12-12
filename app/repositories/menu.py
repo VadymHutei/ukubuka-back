@@ -39,25 +39,28 @@ class MenuRepo(Repository):
         """
         items_query = """
             SELECT
-                `id`,
-                `parent`,
-                `link`,
-                `order`,
-                `added`,
-                `is_active`
-            FROM `ku_menu_items`
+                mi.`id`,
+                mi.`parent`,
+                mi.`link`,
+                mi.`order`,
+                mi.`added`,
+                mi.`is_active`,
+                mit.`name`
+            FROM `ku_menu_items` mi
+            LEFT JOIN `ku_menu_items_text` mit
+                ON mit.`item_id` = mi.`id`
+                AND mit.`language` = %s
         """
         try:
             with connection.cursor() as cursor:
                 cursor.execute(menu_query, (id_,))
                 menu_result = cursor.fetchone()
-                cursor.execute(items_query)
+                cursor.execute(items_query, (params['language'],))
                 items_result = cursor.fetchall()
         finally:
             connection.close()
         args = [menu_result['item_id'], items_result]
-        menu_items = self._separateMenuItems(*args)
-        menu_result['items'] = menu_items
+        menu_result['items'] = self._separateMenuItems(*args)
         return menu_result
 
     def getMenuByAlias(self, alias, **params) -> list:
