@@ -49,7 +49,10 @@ class Menus(Resource):
         }
         for arg in getDataMethods:
             if self._argsContains(arg):
-                data = getDataMethods[arg](self._getArg(arg), **params)
+                try:
+                    data = getDataMethods[arg](self._getArg(arg), **params)
+                except Exception:
+                    abort(500)
                 break
             abort(400, message='Menu ID or alias are required')
 
