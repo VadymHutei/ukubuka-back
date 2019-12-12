@@ -56,9 +56,41 @@ class Menus(Resource):
                 break
             abort(400, message='Menu ID or alias are required')
 
-        result = self._getMenuStructure(data)
+        data['items'] = self._getMenuStructure(data['items'])
 
-        return jsonify(result)
+        return jsonify(data)
 
     def _getMenuStructure(self, items) -> dict:
-        return {}
+        result = []
+        checked = []
+        data_d = {}
+        dependencies = {}
+        for item in items:
+            parent = item['parent']
+            id_ = item['id']
+            data_d[id_] = item
+            if parent not in dependencies:
+                dependencies[parent] = []
+            dependencies[parent].append(id_)
+        movement_counter = 1
+        while movement_counter > 0:
+            movement_counter = 0
+            for id_ in data_d:
+                item = data_d[id_]
+                parent = item['parent']
+                if id_ in checked:
+                    continue
+                if id_ in dependencies:
+                    continue
+                if parent in data_d:
+                    if 'subitems' not in data_d[parent]:
+                        data_d[parent]['subitems'] = []
+                    data_d[parent]['subitems'].append(item)
+                    dependencies[parent].remove(id_)
+                    if not dependencies[parent]:
+                        del dependencies[parent]
+                else:
+                    result.append(item)
+                checked.append(id_)
+                movement_counter += 1
+        return result
