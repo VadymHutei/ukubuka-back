@@ -1,6 +1,6 @@
 import pymysql
 
-from core import Repository
+from core import Repository, SQLQuery
 
 
 class MenuRepo(Repository):
@@ -37,6 +37,15 @@ class MenuRepo(Repository):
             FROM `ku_menus`
             WHERE `id` = %s
         """
+
+        query = SQLQuery()
+        query.table('ku_menus')
+        query.select('id', 'item_id', 'alias')
+        query.where('`id` = %s')
+        query.order('order', 'desc')
+        query.limit(100)
+        print(query)
+
         items_query = """
             SELECT
                 mi.`id`,
