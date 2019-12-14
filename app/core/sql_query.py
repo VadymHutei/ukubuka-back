@@ -1,5 +1,7 @@
 from typing import List, Dict, Optional
 
+from core import validator
+
 
 class SQLQuery():
 
@@ -20,13 +22,13 @@ class SQLQuery():
     def _quote(self, name: str) -> str:
         return '`' + name.strip(' \'"`') + '`'
 
-    def table(self, table_name: str) -> None:
-        self._table_name = self._quote(table_name)
+    def _validSelectData(self):
+        return self._table_name is not None
 
-    def select(self, *fields: List[str]) -> None:
-        self._type = 'select'
-        if fields:
-            self._fields = ', '.join(map(lambda x: self._quote(x), fields))
+    def table(self, table_name: str) -> None:
+        if not validator.tableName(table_name):
+            raise Exception('Wrong DB table name')
+        self._table_name = self._quote(table_name)
 
     def where(self, condition: str) -> None:
         self._where.append(condition)
@@ -37,11 +39,14 @@ class SQLQuery():
     def limit(self, limit: int) -> None:
         self._limit = str(limit)
 
-    def render(self) -> str:
-        if self._type == 'select':
-            return self._renderSelect()
+    def select(self, *fields: List[str]) -> None:
+        self._type = 'select'
+        if fields:
+            self._fields = ', '.join(map(lambda x: self._quote(x), fields))
 
     def _renderSelect(self) -> str:
+        if not self._validSelectData():
+            return ''
         query: List[str] = []
         query.append('SELECT')
         query.append(self._fields)
@@ -53,6 +58,11 @@ class SQLQuery():
         for order in self._order.items():
             query.append('ORDER BY')
             query.extend(order)
-        query.append('LIMIT')
-        query.append(self._limit)
+        if self._limit is not None:
+            query.append('LIMIT')
+            query.append(self._limit)
         return ' '.join(query) + ';'
+
+    def render(self) -> str:
+        if self._type == 'select':
+            return self._renderSelect()
