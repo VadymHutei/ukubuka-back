@@ -1,6 +1,4 @@
-import pymysql
-
-from core import Repository, SQLQuery
+from core import Repository
 
 
 class MenuRepo(Repository):
@@ -20,48 +18,31 @@ class MenuRepo(Repository):
         return menu_items
 
     def getMenuByID(self, id_, **params) -> list:
-        db_connection_param = {
-            'host': 'localhost',
-            'user': 'root',
-            'password': 'root',
-            'db': 'ukubuka',
-            'charset': 'utf8mb4',
-            'cursorclass': pymysql.cursors.DictCursor
-        }
-        connection = pymysql.connect(**db_connection_param)
-        menu_query = """
-            SELECT
-                `id`,
-                `item_id`,
-                `alias`
-            FROM `ku_menus`
-            WHERE `id` = %s
-        """
-
-        query = SQLQuery()
-        query.table('ku_menus')
-        query.select('id', 'item_id', 'alias')
-        query.where('`id` = %s')
-        query.order('order', 'desc')
-        query.limit(100)
-        print(query)
-
-        items_query = """
-            SELECT
-                mi.`id`,
-                mi.`parent`,
-                mi.`link`,
-                mi.`order`,
-                mi.`added`,
-                mi.`is_active`,
-                mit.`name`
-            FROM `ku_menu_items` mi
-            LEFT JOIN `ku_menu_items_text` mit
-                ON mit.`item_id` = mi.`id`
-                AND mit.`language` = %s
-        """
+        connection = self._getConnection()
         try:
             with connection.cursor() as cursor:
+                menu_query = """
+                    SELECT
+                        `id`,
+                        `item_id`,
+                        `alias`
+                    FROM `menus`
+                    WHERE `id` = %s
+                """
+                items_query = """
+                    SELECT
+                        mi.`id`,
+                        mi.`parent`,
+                        mi.`link`,
+                        mi.`order`,
+                        mi.`added`,
+                        mi.`is_active`,
+                        mit.`name`
+                    FROM `menu_items` mi
+                    LEFT JOIN `menu_items_text` mit
+                        ON mit.`item_id` = mi.`id`
+                        AND mit.`language` = %s
+                """
                 cursor.execute(menu_query, (id_,))
                 menu_result = cursor.fetchone()
                 cursor.execute(items_query, (params['language'],))
@@ -73,4 +54,37 @@ class MenuRepo(Repository):
         return menu_result
 
     def getMenuByAlias(self, alias, **params) -> list:
-        return []
+        connection = self._getConnection()
+        try:
+            with connection.cursor() as cursor:
+                menu_query = """
+                    SELECT
+                        `id`,
+                        `item_id`,
+                        `alias`
+                    FROM `menus`
+                    WHERE `alias` = %s
+                """
+                items_query = """
+                    SELECT
+                        mi.`id`,
+                        mi.`parent`,
+                        mi.`link`,
+                        mi.`order`,
+                        mi.`added`,
+                        mi.`is_active`,
+                        mit.`name`
+                    FROM `menu_items` mi
+                    LEFT JOIN `menu_items_text` mit
+                        ON mit.`item_id` = mi.`id`
+                        AND mit.`language` = %s
+                """
+                cursor.execute(menu_query, (alias,))
+                menu_result = cursor.fetchone()
+                cursor.execute(items_query, (params['language'],))
+                items_result = cursor.fetchall()
+        finally:
+            connection.close()
+        args = [menu_result['item_id'], items_result]
+        menu_result['items'] = self._separateMenuItems(*args)
+        return menu_result
