@@ -72,6 +72,13 @@ def active(active) -> bool:
     return False
 
 
+def tableName(name) -> bool:
+    if isinstance(name, str):
+        pattern = r'[0-9a-zA-Z_]{1,64}'
+        return bool(re.fullmatch(pattern, name))
+    return False
+
+
 # Menu
 
 def menuID(menu_id) -> bool:
