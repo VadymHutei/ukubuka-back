@@ -1,6 +1,4 @@
-/.vscode/
-
-__pycache__/
+/app/config.py
 
 /app/bin/
 /app/include/
@@ -9,4 +7,6 @@ __pycache__/
 /app/lib64
 /app/pyvenv.cfg
 
-/app/config_custom.py
+/.vscode/
+
+__pycache__/
