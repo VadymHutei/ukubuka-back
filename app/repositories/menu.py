@@ -4,9 +4,9 @@ from core import Repository
 class MenuRepo(Repository):
 
     def _separateMenuItems(self, id_, items) -> list:
-        menu_items: list = []
-        step_counter: int = -1
-        parents: list = [id_]
+        menu_items = []
+        step_counter = -1
+        parents = [id_]
         while step_counter != 0:
             step_counter = 0
             for item in items:
