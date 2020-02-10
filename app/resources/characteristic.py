@@ -2,7 +2,7 @@ from flask import jsonify
 from flask_restful import Resource
 
 
-class Languages(Resource):
+class Characteristic(Resource):
 
     def get(self):
         return jsonify(

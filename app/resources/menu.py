@@ -5,9 +5,9 @@ from core import Resource, validator
 from repositories import MenuRepo
 
 
-class Menus(Resource):
+class Menu(Resource):
 
-    def _setArguments(self) -> None:
+    def _setArguments(self):
         parser = reqparse.RequestParser()
         parser.add_argument('id', type=int, location='args')
         parser.add_argument('alias', location='args')
@@ -16,31 +16,16 @@ class Menus(Resource):
         parser.add_argument('language', location='headers')
         self._args = parser.parse_args()
 
-    def _validArguments(self) -> None:
-        validFuncs = {
-            'id': validator.menuID,
-            'alias': validator.menuAlias,
-            'active': validator.active,
-            'order': validator.orderDirection,
-            'language': validator.languageCode
-        }
-        forDeleting = []
-        for key, value in self._args.items():
-            if value is None:
-                forDeleting.append(key)
-                continue
-            if key in validFuncs:
-                if not validFuncs[key](value):
-                    abort(400, message=f'Wrong {key}')
-                continue
-            else:
-                forDeleting.append(key)
-        for key in forDeleting:
-            del self._args[key]
-
     def get(self):
         self._setArguments()
-        self._validArguments()
+        validFuncs = {
+            'id': validator.menu.menuID,
+            'alias': validator.menu.menuAlias,
+            'active': validator.common.active,
+            'order': validator.common.orderDirection,
+            'language': validator.common.languageCode
+        }
+        self._validArguments(validFuncs)
         params = self._getParams('active', 'order', 'language')
         repo = MenuRepo()
         getDataMethods = {
@@ -48,17 +33,14 @@ class Menus(Resource):
             'alias': repo.getMenuByAlias
         }
         for arg in getDataMethods:
-            if self._argsContains(arg):
+            if self._hasArg(arg):
                 try:
                     data = getDataMethods[arg](self._getArg(arg), **params)
+                    data['items'] = self._getMenuStructure(data['items'])
+                    return jsonify(data)
                 except Exception:
                     abort(500)
-                break
-            abort(400, message='Menu ID or alias are required')
-
-        data['items'] = self._getMenuStructure(data['items'])
-
-        return jsonify(data)
+        abort(400, message='Menu ID or alias are required')
 
     def _getMenuStructure(self, items) -> dict:
         result = []

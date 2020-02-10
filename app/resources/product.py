@@ -2,7 +2,7 @@ from flask import jsonify
 from flask_restful import Resource
 
 
-class Currencies(Resource):
+class Product(Resource):
 
     def get(self):
         return jsonify(
