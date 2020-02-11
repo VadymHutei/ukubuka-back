@@ -3,6 +3,10 @@ class SQLQuery():
     _JOIN_TYPES = ('LEFT', 'RIGHT', 'INNER')
     _ORDER = ('ASC', 'DESC')
 
+    def __init__(self):
+        self._query = None
+        self._query_parts = []
+
     def _table_handler(self, table):
         if type(table) == str:
             return table
