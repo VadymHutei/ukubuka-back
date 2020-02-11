@@ -5,8 +5,12 @@ class SQLQuery():
     _from = None
     _join = []
     _where = []
+    _group = []
+    _order = []
+    _limit = None
 
     _JOIN_TYPES = ('LEFT', 'RIGHT', 'INNER')
+    _ORDER = ('ASC', 'DESC')
 
     def _table_handler(self, table):
         if type(table) == str:
