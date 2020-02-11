@@ -45,7 +45,8 @@ class SelectQuery(SQLQuery):
 
         # where
         if self._where:
+            where_conditions = ' AND '.join(self._where)
             self._query.append('WHERE')
-            self._query.extend(self._where)
+            self._query.append(where_conditions)
 
         return ' '.join(self._query) + ';'
