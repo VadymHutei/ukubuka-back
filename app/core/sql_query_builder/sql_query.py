@@ -1,14 +1,5 @@
 class SQLQuery():
 
-    _query = []
-    _fields = []
-    _from = None
-    _join = []
-    _where = []
-    _group = []
-    _order = []
-    _limit = None
-
     _JOIN_TYPES = ('LEFT', 'RIGHT', 'INNER')
     _ORDER = ('ASC', 'DESC')
 
