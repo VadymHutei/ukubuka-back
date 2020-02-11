@@ -3,13 +3,23 @@ from core.sql_query_builder import SQLQuery
 
 class SelectQuery(SQLQuery):
 
+    def __init__(self):
+        self._query = []
+        self._fields = []
+        self._from = None
+        self._join = []
+        self._where = []
+        self._group = []
+        self._order = []
+        self._limit = None
+
     def fields(self, *fields):
         self._fields.extend(fields)
 
     def table(self, table):
         self._from = self._table_handler(table)
 
-    def left_join(self, table, condition):
+    def leftJoin(self, table, condition):
         self._join.append((
             'LEFT',
             self._table_handler(table),
@@ -18,6 +28,9 @@ class SelectQuery(SQLQuery):
 
     def where(self, condition):
         self._where.append(condition)
+
+    def whereInSelect(self, field, subquery):
+        self._where.append(f'{field} IN ({subquery.render()})')
 
     def group(self, field):
         self._group.append(field)
@@ -67,7 +80,7 @@ class SelectQuery(SQLQuery):
         # order by
         if self._order:
             self._query.append('ORDER BY')
-            order_fields = [' '.join(order) for order in self._order]
+            order_fields = [f'{order[0]} {order[1]}' for order in self._order]
             self._query.append(', '.join(order_fields))
 
         # limit
@@ -75,4 +88,5 @@ class SelectQuery(SQLQuery):
             self._query.append('LIMIT')
             self._query.append(str(self._limit))
 
-        return ' '.join(self._query) + ';'
+
+        return ' '.join(self._query)
