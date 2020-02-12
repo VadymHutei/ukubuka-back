@@ -12,7 +12,9 @@ class Resource(Rsrc):
         self._transform_methods = {}
         self._validation_methods = {}
 
-    def _getParams(self, *args):
+    def _getArguments(self, *args):
+        if not args:
+            return self._args
         return {p: self._args[p] for p in args if p in self._args}
 
     def _hasArg(self, arg):
