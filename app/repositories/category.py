@@ -15,18 +15,28 @@ class CategoryRepo(Repository):
             'ct.`name`'
         ),
         query.table(('`categories`', 'c'))
-        language = params.get('language')
-        if language:
+
+        if 'is_active' in params:
+            query.where(f'c.`is_active` = "{params["is_active"]}"')
+
+        if 'parent' in params:
+            if params['parent'] is None:
+                query.where('c.`parent` IS NULL')
+            else:
+                query.where(f'c.`parent` = {params["parent"]}')
+
+        if 'language' in params:
             query.leftJoin(
                 ('`categories_text`', 'ct'),
                 'ct.`category_id` = c.`id`'
             )
-            query.where('ct.`language` = %s')
+            query.where(f'ct.`language` = "{params["language"]}"')
+
         query_string = query.render()
         connection = self._getConnection()
         try:
             with connection.cursor() as cursor:
-                cursor.execute(query_string, params['language'])
+                cursor.execute(query_string)
                 categories_result = cursor.fetchall()
                 return categories_result
         finally:
