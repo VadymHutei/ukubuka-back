@@ -1,5 +1,4 @@
 from flask import jsonify
-from flask_restful import reqparse, abort
 
 from core import Resource
 from core.validator import common as v_common, menu as v_menu
@@ -8,13 +7,28 @@ from repositories import CategoryRepo
 
 class Category(Resource):
 
+    def __init__(self):
+        super().__init__()
+        self._parser.add_argument(
+            'language',
+            required=True,
+            location='headers'
+        )
+        self._parser.add_argument(
+            'active',
+            dest='is_active',
+            choices=('y', 'n'),
+            case_sensitive=False,
+            location='args'
+        )
+        self._validation_methods = {
+            'language': v_common.languageCode,
+            'is_active': v_common.active
+        }
+
     def get(self):
-        parser = reqparse.RequestParser(trim=True, bundle_errors=False)
-        parser.add_argument('language', required=True, location='headers')
-        self._args = parser.parse_args()
-        self._validArguments({
-            'language': v_common.languageCode
-        })
+        self._args = self._parser.parse_args()
+        self._validateArguments()
         params = self._getParams('language')
         repo = CategoryRepo()
         result = repo.getCategories(params)
