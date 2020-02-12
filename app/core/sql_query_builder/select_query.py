@@ -4,7 +4,7 @@ from core.sql_query_builder import SQLQuery
 class SelectQuery(SQLQuery):
 
     def __init__(self):
-        # super().__init__()
+        super().__init__()
 
         self._fields = []
         self._from = None
