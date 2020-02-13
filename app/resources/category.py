@@ -22,10 +22,12 @@ class Category(Resource):
             dest='is_active',
             choices=('y', 'n'),
             case_sensitive=False,
+            store_missing=False,
             location='args'
         )
         self._parser.add_argument(
             'parent',
+            store_missing=False,
             location='args'
         )
         self._transform_methods = {
