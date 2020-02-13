@@ -17,47 +17,39 @@ class SelectQuery(SQLQuery):
         self._query_parts.append('SELECT')
 
     def fields(self, *fields):
-        self._fields.extend(fields)
+        for field in fields:
+            self._fields.append(self._field_handle(field))
 
     def table(self, table):
-        self._from = self._table_handler(table)
+        self._from = self._table_handle(table)
 
     def leftJoin(self, table, condition):
         self._join.append((
             'LEFT',
-            self._table_handler(table),
-            condition
+            self._table_handle(table),
+            self._join_condition_handle(condition)
         ))
 
     def where(self, condition):
-        self._where.append(condition)
+        self._where.append(self._where_condition_handle(condition))
 
     def whereInSelect(self, field, subquery):
-        self._where.append(f'{field} IN ({subquery.render()})')
+        self._where.append(f'{self._field_handle(field)} IN ({subquery.render()})')
 
     def group(self, field):
-        self._group.append(field)
+        self._group.append(self._field_handle(field))
 
     def order(self, field, order='ASC'):
         order = order.upper()
         if order in self._ORDER:
-            self._order.append((field, order))
+            self._order.append((self._field_handle(field), order))
 
     def limit(self, limit):
         self._limit = limit
 
     def _buildFields(self):
         if self._fields:
-            self._query_parts.append(
-                ', '.join(
-                    [
-                        f'{self._quote(field[0])} AS {self._quote(field[1])}'
-                            if type(field) is tuple else
-                        self._quote(field)
-                        for field in self._fields
-                    ]
-                )
-            )
+            self._query_parts.append(', '.join(self._fields))
         else:
             self._query_parts.append('*')
 
