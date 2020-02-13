@@ -48,7 +48,16 @@ class SelectQuery(SQLQuery):
 
     def _buildFields(self):
         if self._fields:
-            self._query_parts.append(', '.join(self._fields))
+            self._query_parts.append(
+                ', '.join(
+                    [
+                        f'{self._quote(field[0])} AS {self._quote(field[1])}'
+                            if type(field) is tuple else
+                        self._quote(field)
+                        for field in self._fields
+                    ]
+                )
+            )
         else:
             self._query_parts.append('*')
 
