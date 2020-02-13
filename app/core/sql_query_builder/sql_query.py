@@ -8,17 +8,13 @@ class SQLQuery():
         self._query_parts = []
 
     def _table_handler(self, table):
-        if type(table) == str:
-            return table
-        if type(table) == tuple:
-            result = table[0]
-            if len(table) > 1:
-                result += f' AS {table[1]}'
-            return result
-        
+        return f'{self._quote(table[0])} AS {self._quote(table[1])}' \
+            if type(table) is tuple \
+            else table
+
     def _quote(self, string):
-        return '.'.join(
-            f'`{word}`' for word in map(
+        return '.'.join(f'`{word}`'
+            for word in map(
                 lambda x: x.strip('`'),
                 string.split('.')
             )
