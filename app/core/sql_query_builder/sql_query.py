@@ -15,3 +15,11 @@ class SQLQuery():
             if len(table) > 1:
                 result += f' AS {table[1]}'
             return result
+        
+    def _quote(self, string):
+        return '.'.join(
+            f'`{word}`' for word in map(
+                lambda x: x.strip('`'),
+                string.split('.')
+            )
+        )
