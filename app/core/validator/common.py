@@ -75,3 +75,10 @@ def tableName(name):
         pattern = r'[0-9a-zA-Z_]{1,64}'
         return bool(re.fullmatch(pattern, name))
     return False
+
+
+def fieldName(name):
+    if isinstance(name, str):
+        pattern = r'[0-9a-zA-Z_]{1,64}'
+        return bool(re.fullmatch(pattern, name))
+    return False
