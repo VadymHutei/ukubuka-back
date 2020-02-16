@@ -31,15 +31,28 @@ class Resource(Rsrc):
             if arg in self._args:
                 self._args[arg] = method(self._args[arg])
 
+    def _validateArgument(self, key, value):
+        def validate(value, method):
+            if value is None:
+                return
+            if not method(value):
+                abort(400, message=f'Wrong {key}')
+        if type(value) is list:
+            for v in value:
+                if type(v) is tuple:
+                    for i, x in enumerate(v):
+                        validate(x, self._validation_methods[key][i])
+                    return
+                validate(v, self._validation_methods[key])
+            return
+        validate(value, self._validation_methods[key])
+
     def _validateArguments(self):
         forDeleting = []
         for key, value in self._args.items():
-            if value is None:
-                continue
             if key not in self._validation_methods:
                 forDeleting.append(key)
                 continue
-            if not self._validation_methods[key](value):
-                abort(400, message=f'Wrong {key}')
+            self._validateArgument(key, value)
         for key in forDeleting:
             del self._args[key]
