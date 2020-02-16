@@ -44,7 +44,11 @@ class Menu(Resource):
         self._validation_methods = {
             'language': v_common.languageCode,
             'is_active': v_common.active,
-            'order': v_common.orderDirection
+            'order': v_common.orderDirection,
+            'order_by': (
+                v_common.fieldName,
+                v_common.orderDirection
+            )
         }
 
     def get(self):

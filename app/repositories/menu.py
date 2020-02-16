@@ -32,6 +32,9 @@ class MenuRepo(Repository):
         if 'order' in params:
             query.order(params['order'])
 
+        if 'order_by' in params:
+            query.orderBy(params['order_by'])
+
         query_string = query.render()
         print(query_string)
         connection = self._getConnection()
