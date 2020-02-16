@@ -1,7 +1,6 @@
 class SQLQuery():
 
     _JOIN_TYPES = ('LEFT', 'RIGHT', 'INNER')
-    _ORDER = ('ASC', 'DESC')
 
     def __init__(self):
         self._query = None

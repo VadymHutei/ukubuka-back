@@ -40,9 +40,17 @@ class SelectQuery(SQLQuery):
         self._group.append(self._field_handle(field))
 
     def order(self, order):
-        order = order.upper()
-        if order in self._ORDER:
-            self._order.append((self._field_handle('order'), order))
+        self._order.append((
+            self._field_handle('order'),
+            order.upper()
+        ))
+
+    def orderBy(self, order_by):
+        for order in order_by:
+            self._order.append((
+                self._field_handle(order[0]),
+                order[1].upper()
+            ))
 
     def limit(self, limit):
         self._limit = limit
