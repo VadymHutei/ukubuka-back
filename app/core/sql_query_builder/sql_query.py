@@ -6,21 +6,29 @@ class SQLQuery():
         self._query = None
         self._query_parts = []
 
-    def _field_handle(self, field):
+    def _valueHandle(self, value):
+        if type(value) is str:
+            return f'\'{value}\''
+        elif type(value) is int:
+            return str(value)
+        else:
+            return str(value)
+
+    def _fieldHandle(self, field):
         if type(field) is str:
             return self._quote(field)
         if type(field) is tuple and len(field) == 2:
             return f'{self._quote(field[0])} AS {self._quote(field[1])}'
         return ''
 
-    def _table_handle(self, table):
+    def _tableHandle(self, table):
         if type(table) is str:
             return self._quote(table)
         if type(table) is tuple and len(table) == 2:
             return f'{self._quote(table[0])} AS {self._quote(table[1])}'
         return ''
 
-    def _join_condition_handle(self, cond):
+    def _joinConditionHandle(self, cond):
         if type(cond) is str:
             return cond
         if type(cond) is tuple:
@@ -30,7 +38,7 @@ class SQLQuery():
                 return f'{self._quote(cond[0])} {cond[1]} {self._quote(cond[2])}'
         return ''
 
-    def _where_condition_handle(self, cond):
+    def _whereConditionHandle(self, cond):
         if type(cond) is str:
             return cond
         if type(cond) is tuple:

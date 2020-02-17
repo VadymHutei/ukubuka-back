@@ -18,37 +18,49 @@ class SelectQuery(SQLQuery):
 
     def fields(self, *fields):
         for field in fields:
-            self._fields.append(self._field_handle(field))
+            self._fields.append(self._fieldHandle(field))
 
     def table(self, table):
-        self._from = self._table_handle(table)
+        self._from = self._tableHandle(table)
 
     def leftJoin(self, table, condition):
         self._join.append((
             'LEFT',
-            self._table_handle(table),
-            self._join_condition_handle(condition)
+            self._tableHandle(table),
+            self._joinConditionHandle(condition)
         ))
 
     def where(self, condition):
-        self._where.append(self._where_condition_handle(condition))
+        where = self._whereConditionHandle(condition)
+        self._where.append(where)
+
+    def whereIn(self, field, values):
+        in_string = ', '.join(
+            map(
+                lambda x: self._valueHandle(x),
+                values
+            )
+        )
+        where = f'{self._fieldHandle(field)} IN ({in_string})'
+        self._where.append(where)
 
     def whereInSelect(self, field, subquery):
-        self._where.append(f'{self._field_handle(field)} IN ({subquery.render()})')
+        where = f'{self._fieldHandle(field)} IN ({subquery.render()})'
+        self._where.append(where)
 
     def group(self, field):
-        self._group.append(self._field_handle(field))
+        self._group.append(self._fieldHandle(field))
 
     def order(self, order):
         self._order.append((
-            self._field_handle('order'),
+            self._fieldHandle('order'),
             order.upper()
         ))
 
     def orderBy(self, order_by):
         for order in order_by:
             self._order.append((
-                self._field_handle(order[0]),
+                self._fieldHandle(order[0]),
                 order[1].upper()
             ))
 
