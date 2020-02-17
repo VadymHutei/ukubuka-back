@@ -10,6 +10,7 @@ class CategoryRepo(Repository):
         query.fields(
             'c.id',
             'c.parent',
+            'c.link',
             'c.order',
             'c.added',
             'c.is_active',
