@@ -29,7 +29,13 @@ class Resource(Rsrc):
     def _transformArguments(self):
         for arg, method in self._transform_methods.items():
             if arg in self._args:
-                self._args[arg] = method(self._args[arg])
+                if type(self._args[arg]) is list:
+                    self._args[arg] = tuple(map(
+                        lambda x: method(x),
+                        self._args[arg]
+                    ))
+                elif type(self._args[arg]) is str:
+                    self._args[arg] = method(self._args[arg])
 
     def _validateArgument(self, key, value):
         def validate(value, method):
@@ -37,7 +43,7 @@ class Resource(Rsrc):
                 return
             if not method(value):
                 abort(400, message=f'Wrong {key}')
-        if type(value) is list:
+        if type(value) is tuple:
             for v in value:
                 if type(v) is tuple:
                     for i, x in enumerate(v):
