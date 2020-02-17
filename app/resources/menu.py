@@ -39,7 +39,7 @@ class Menu(Resource):
             location='args'
         )
         self._transform_methods = {
-            'order_by': lambda x: [tuple(y.split('-')[-2:]) for y in x]
+            'order_by': lambda x: tuple(x.split('-')[-2:])
         }
         self._validation_methods = {
             'language': v_common.languageCode,
