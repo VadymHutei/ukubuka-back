@@ -10,11 +10,12 @@ class CategoryRepo(Repository):
         query.fields(
             'c.id',
             'c.parent',
-            'c.link',
+            'c.alias',
             'c.order',
             'c.added',
             'c.is_active',
-            'ct.name'
+            'ct.name',
+            'ct.description'
         )
 
         query.table(('categories', 'c'))
